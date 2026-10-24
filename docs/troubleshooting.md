@@ -12,7 +12,7 @@ Seven problems came up during the deployment. Each was diagnosed from logs, sock
 | 4 | Prechecks refused quay.io images | Upstream images flagged as test-only | `--use-test-images` |
 | 5 | MariaDB: "Address already in use" | ProxySQL and MariaDB both bound port 3306 | Disabled ProxySQL, rebuilt MariaDB |
 | 6 | cinder-backup reported down | No backup backend | Disabled the service, removed stale record |
-| 7 | Security group wouldn't attach to host VM | Port security disabled on that port | Added rules to the management port's group |
+| 7 | Security group wouldn't attach to host VM | Port security disabled on the second port | Added rules to the management port's group |
 
 ---
 
@@ -20,7 +20,7 @@ Seven problems came up during the deployment. Each was diagnosed from logs, sock
 
 **Symptom:** `kolla-ansible install-deps` failed with HTTP 500 from `galaxy.ansible.com`.
 
-**Diagnosis:** the error came from Galaxy's servers, and Galaxy's status page confirmed a public outage. Nothing was wrong locally.
+**Diagnosis:** HTTP 500 is a server-side error, and the first collection (`openstack.kolla`, from opendev.org) had installed fine, so the host's network was working. The problem was on Galaxy's side.
 
 **Fix:** installed all 7 required collections directly from their Git repositories, pinned to versions compatible with the 2026.1 `requirements.yml`. See [`scripts/01-install-collections-from-git.sh`](../scripts/01-install-collections-from-git.sh).
 
@@ -28,18 +28,20 @@ Seven problems came up during the deployment. Each was diagnosed from logs, sock
 
 ## 2. Docker install failed with "Network is unreachable"
 
-**Symptom:** `bootstrap-servers` failed while adding Docker's upstream apt repository.
+**Symptom:** `bootstrap-servers` failed while adding Docker's upstream apt repository, reporting "Network is unreachable".
 
 **Diagnosis:**
 
 ```bash
-curl -4 -I https://download.docker.com    # timed out
-ping -c 3 download.docker.com             # Network is unreachable
+ping -c 3 8.8.8.8                      # works: internet is up
+getent ahosts download.docker.com      # resolves (CloudFront)
+curl -4 -I --max-time 15 https://download.docker.com/linux/ubuntu/gpg   # times out
+curl -6 -I --max-time 15 https://download.docker.com/linux/ubuntu/gpg   # fails instantly: no IPv6
 ```
 
-The host's network couldn't reach `download.docker.com` over IPv4, and no IPv6 was configured.
+DNS and general internet access worked, but HTTPS to download.docker.com timed out over IPv4. Python reported the instant IPv6 failure ("Network is unreachable"), which hid the real cause.
 
-**Fix:** used Ubuntu's own `docker.io` package by setting `enable_docker_repo: false` in `globals.yml`.
+**Fix:** used Ubuntu's own Docker package by setting both `enable_docker_repo: false` and `docker_apt_package: "docker.io"` in `globals.yml`.
 
 ---
 
@@ -69,13 +71,15 @@ pip install docker dbus-python -c https://releases.openstack.org/constraints/upp
 
 ## 5. MariaDB crashed with "Address already in use"
 
-**Symptom:** the `mariadb` container kept restarting during `deploy`.
+**Symptom:** `deploy` failed at "Wait for first MariaDB service port liveness"; the `mariadb` container showed `Exited (1)`.
 
 **Diagnosis:**
 
 ```bash
-docker logs mariadb | tail     # bind on port 3306 failed: Address already in use
-sudo ss -tlnp | grep 3306      # proxysql already listening on <MGMT_IP>:3306
+docker ps -a --filter name=mariadb      # Exited (1)
+tail -60 /var/lib/docker/volumes/kolla_logs/_data/mariadb/mariadb.log
+#   [ERROR] Can't start server: Bind on TCP/IP port. Got error: 98: Address already in use
+sudo ss -tlnp | grep 3306               # proxysql already listening on <MGMT_IP>:3306
 ```
 
 On a single node, the API address equals the host IP, so **ProxySQL** and **MariaDB** both tried to bind port 3306 on the same address.
@@ -100,7 +104,7 @@ docker exec -it cinder_api cinder-manage service remove cinder-backup <hostname>
 
 ## 7. Security group would not attach to the host VM
 
-**Symptom:** on the outer cloud, attaching a security group to the host VM's second port failed.
+**Symptom:** on the outer cloud, attaching a security group to the host instance failed, because OpenStack applies it to every port, including the second port, which has port security disabled.
 
 **Diagnosis:** ports with **port security disabled** cannot take security groups, by design.
 
