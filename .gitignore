@@ -1,5 +1,6 @@
 # Never commit real credentials or keys
 passwords.yml
+clouds.yaml
 *openrc*
 *.pem
 *.key
