@@ -1,0 +1,7 @@
+# Never commit real credentials or keys
+passwords.yml
+*openrc*
+*.pem
+*.key
+id_*
+!*.example
