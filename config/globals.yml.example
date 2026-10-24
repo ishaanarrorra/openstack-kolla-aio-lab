@@ -18,6 +18,7 @@ nova_compute_virt_type: "qemu"
 
 # Docker from Ubuntu's repository (download.docker.com unreachable)
 enable_docker_repo: false
+docker_apt_package: "docker.io"          # docker-ce is not in Ubuntu's repositories
 
 # Services
 enable_heat: "yes"
