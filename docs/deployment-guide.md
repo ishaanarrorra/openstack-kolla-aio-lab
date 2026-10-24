@@ -68,7 +68,7 @@ Installed Kolla-Ansible 22.x (release 2026.1) and ansible-core 2.20 in an isolat
 
 ```bash
 sudo apt update
-sudo apt install -y git python3-dev python3-venv libffi-dev gcc libssl-dev
+sudo apt install -y git python3-dev python3-venv libffi-dev gcc libssl-dev libdbus-glib-1-dev pkg-config libdbus-1-dev
 
 python3 -m venv ~/kolla-venv
 source ~/kolla-venv/bin/activate
@@ -114,7 +114,7 @@ kolla-ansible bootstrap-servers -i ~/all-in-one              # prepares the host
 kolla-ansible prechecks -i ~/all-in-one --use-test-images    # validates ports, interfaces, hostname, config
 kolla-ansible pull -i ~/all-in-one                           # downloads ~30 container images
 kolla-ansible deploy -i ~/all-in-one                         # 344 tasks
-kolla-ansible post-deploy -i ~/all-in-one                    # writes /etc/kolla/admin-openrc.sh
+kolla-ansible post-deploy -i ~/all-in-one                    # writes /etc/kolla/clouds.yaml
 ```
 
 `deploy` created the databases, started each service's containers and registered every API endpoint in Keystone.
@@ -130,7 +130,8 @@ localhost : ok=344  changed=200  unreachable=0  failed=0
 
 ```bash
 pip install python-openstackclient -c https://releases.openstack.org/constraints/upper/2026.1
-source /etc/kolla/admin-openrc.sh
+mkdir -p ~/.config/openstack && cp /etc/kolla/clouds.yaml ~/.config/openstack/
+export OS_CLOUD=kolla-admin
 
 openstack service list
 openstack compute service list    # scheduler, conductor, compute: up
