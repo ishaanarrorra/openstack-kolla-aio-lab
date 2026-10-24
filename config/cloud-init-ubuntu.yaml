@@ -1,0 +1,7 @@
+#cloud-config
+# Passed to vm2-ubuntu with --user-data. Sets a console password for
+# troubleshooting from the Horizon console; SSH still uses the key pair.
+password: <set-a-console-password>
+chpasswd:
+  expire: false
+ssh_pwauth: false
