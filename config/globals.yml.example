@@ -1,0 +1,30 @@
+# Sanitized globals.yml settings for a single-node Kolla-Ansible 2026.1 lab.
+# Append to /etc/kolla/globals.yml and replace the placeholders.
+
+kolla_base_distro: "ubuntu"
+openstack_release: "2026.1"
+
+# Networking
+network_interface: "enp3s0"              # management NIC (has an IP)
+neutron_external_interface: "enp8s0"     # Neutron external NIC (NO IP)
+kolla_internal_vip_address: "<MGMT_IP>"  # single node: same as the host IP
+
+# Single node: no load balancer or database proxy
+enable_haproxy: "no"
+enable_proxysql: "no"                    # avoids port 3306 conflict with MariaDB
+
+# No nested KVM available: use software emulation
+nova_compute_virt_type: "qemu"
+
+# Docker from Ubuntu's repository (download.docker.com unreachable)
+enable_docker_repo: false
+
+# Services
+enable_heat: "yes"
+enable_horizon: "yes"
+
+# Block storage: Cinder with LVM over iSCSI
+enable_cinder: "yes"
+enable_cinder_backend_lvm: "yes"
+cinder_volume_group: "cinder-volumes"
+enable_cinder_backup: "no"               # no backup target in the lab
