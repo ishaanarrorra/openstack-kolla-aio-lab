@@ -145,4 +145,4 @@ This is a **lab** deployment: single node, plain HTTP, public test images. It is
 
 ---
 
-**Author:** Ishaan Arora · Cloud Support Engineer · [LinkedIn](https://www.linkedin.com/in/your-profile-here)
+**Author:** Ishaan Arora · Cloud Support Engineer · [LinkedIn](https://www.linkedin.com/in/ishaan-a-713491184)
