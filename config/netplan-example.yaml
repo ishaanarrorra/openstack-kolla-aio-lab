@@ -1,0 +1,11 @@
+# /etc/netplan/60-kolla.yaml (example)
+# NIC1 keeps its management IP; NIC2 is UP with no IP, for Neutron (br-ex).
+network:
+  version: 2
+  ethernets:
+    enp3s0:
+      dhcp4: true
+    enp8s0:
+      dhcp4: false
+      dhcp6: false
+      link-local: []
