@@ -8,7 +8,7 @@ Step-by-step deployment of a single-node OpenStack 2026.1 cloud with Kolla-Ansib
 
 ## Phase 0 – Infrastructure preparation
 
-**Host VM:** Ubuntu 24.04 · 8 vCPU · 16 GB RAM · 100 GB root disk, created on the outer (production) OpenStack cloud.
+**Host VM:** Ubuntu 24.04 · 8 vCPU · 16 GB RAM · 100 GB root disk, created on an OpenStack cloud.
 
 ### Two NICs with distinct roles
 
