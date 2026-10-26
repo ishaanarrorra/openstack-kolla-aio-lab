@@ -104,6 +104,7 @@ Key settings in `/etc/kolla/globals.yml` (full example in [`config/globals.yml.e
 | `enable_haproxy` / `enable_proxysql` | `no` | Not needed on one node; ProxySQL conflicted with MariaDB on port 3306 |
 | `nova_compute_virt_type` | `qemu` | No nested KVM |
 | `enable_docker_repo` | `false` | Use Ubuntu's docker.io package |
+| `docker_apt_package` | `docker.io` | Ubuntu's Docker package (docker-ce isn't in Ubuntu's repositories) |
 
 ---
 
