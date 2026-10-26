@@ -1,6 +1,6 @@
 # OpenStack 2026.1 All-in-One Lab with Kolla-Ansible
 
-A fully working single-node OpenStack cloud (release **2026.1**) deployed with **Kolla-Ansible**, running nested inside a VM on a production OpenStack cloud. Every OpenStack service runs as a Docker container. The deployment was validated end to end by launching two VMs that demonstrate both storage models: an **ephemeral disk** and a persistent **Cinder volume**.
+A fully working single-node OpenStack cloud (release **2026.1**) deployed with **Kolla-Ansible**, running nested inside a VM on an OpenStack cloud. Every OpenStack service runs as a Docker container. The deployment was validated end to end by launching two VMs that demonstrate both storage models: an **ephemeral disk** and a persistent **Cinder volume**.
 
 ![OpenStack](https://img.shields.io/badge/OpenStack-2026.1-red) ![Kolla--Ansible](https://img.shields.io/badge/Kolla--Ansible-22.x-blue) ![Ubuntu](https://img.shields.io/badge/Ubuntu-24.04-orange) ![Ansible](https://img.shields.io/badge/ansible--core-2.20-black) ![Docker](https://img.shields.io/badge/Docker-29.x-2496ED)
 
@@ -34,7 +34,7 @@ NIC1 carries management traffic, NIC2 is bridged into the inner cloud's external
 
 ```mermaid
 flowchart TB
-  subgraph OUTER["Outer cloud (production OpenStack)"]
+  subgraph OUTER["Outer cloud (OpenStack)"]
     subgraph HOST["Host VM: Ubuntu 24.04 · 8 vCPU · 16 GB RAM · 100 GB + 50 GB disk"]
       NIC1["NIC1 enp3s0<br/>management IP<br/>SSH · APIs · Horizon"]
       NIC2["NIC2 enp8s0<br/>no IP · port security off<br/>bridged to br-ex"]
